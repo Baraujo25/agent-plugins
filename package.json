@@ -1,0 +1,17 @@
+{
+  "name": "agent-plugins-opencode",
+  "version": "0.1.0",
+  "description": "OpenCode host for the agent-plugins collection. Drives the existing Claude Code hooks.",
+  "license": "Apache-2.0",
+  "private": true,
+  "exports": {
+    ".": "./opencode/index.mjs"
+  },
+  "files": [
+    "opencode",
+    "plugins"
+  ],
+  "dependencies": {
+    "@opencode/plugin": "latest"
+  }
+}

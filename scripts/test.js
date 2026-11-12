@@ -6342,3 +6342,5 @@ test('persistence: a failure counts toward a file\'s retries when it is about th
   assert.equal(loop((t) => S.observe(t, 'Bash', { command: 'node test/parse.test.js' }, 'AssertionError: expected 1')), fired, 'its own test, named by the stem');
   assert.equal(loop((t) => S.observe(t, 'Bash', { command: 'node scripts/report.js' }, 'TypeError: x is undefined\n    at parse (src/parse.js:12:3)')), fired, 'a stack trace through it');
 });
+
+require('../opencode/bridge.test.js');

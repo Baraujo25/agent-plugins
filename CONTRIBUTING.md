@@ -60,6 +60,11 @@ questions — so the design is agreed before code is written.
   and runs `hooks/hooks.json`, so a match on a tool name also names Droid's
   tools (`Create`, `ApplyPatch`, `Execute`), and a close that reads the final
   message has nothing to read there: Droid's `Stop` does not send it.
+- **OpenCode runs `hooks/` from one package.** `opencode/bridge.js` spawns the
+  same scripts with Claude-shaped JSON. There is no third copy of the scanners.
+  OpenCode cannot refuse the end of a turn, so strict mode parks the finding
+  for the next prompt instead of blocking. Do not add an `@opencode/plugin`
+  import under `plugins/`.
 - **Hooks write the envelope, never plain text.** Everything a `hooks/`
   script says to the model goes out as
   `{"hookSpecificOutput":{"hookEventName":…,"additionalContext":…}}`
