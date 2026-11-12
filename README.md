@@ -405,13 +405,16 @@ GitHub's "Cite this repository" ([CITATION.cff](CITATION.cff)).
 ## Requirements
 
 - **`node` on the host's PATH, Node 18 or later.** Every hook is launched as
-  `node <script>`, by Claude Code, Codex, Cursor or Droid. The hooks use Node's
-  built-ins only (`fs`, `os`, `path`), with no packages and no network.
+  `node <script>`, by Claude Code, Codex, Cursor, Droid, or the OpenCode
+  bridge. The hooks use Node's built-ins only (`fs`, `os`, `path`), with no
+  packages and no network. The OpenCode entry is the one package dependency,
+  `@opencode/plugin`, and it only launches those hooks.
 - **A host that runs plugin hooks**: Claude Code, Codex (after trusting the
-  hooks once with `/hooks`), or Cursor. On Cursor headless (`agent -p`),
-  hooks run only when the process was not started from Git Bash. Factory
-  Droid runs the Claude Code hooks, without the close checks
-  ([Factory Droid](#factory-droid)). Any other Agent Skills or Agent Plugins
+  hooks once with `/hooks`), Cursor, or OpenCode. On Cursor headless
+  (`agent -p`), hooks run only when the process was not started from Git
+  Bash. Factory Droid runs the Claude Code hooks, without the close checks
+  ([Factory Droid](#factory-droid)). OpenCode runs the same hooks from one
+  package ([OpenCode](#opencode)). Any other Agent Skills or Agent Plugins
   client gets the skills and no hooks.
 - Nothing else: no build step, no install script, no service.
 
@@ -499,6 +502,38 @@ Add this repo as a marketplace (Dashboard → Plugins → Add Marketplace → *I
 from Repo*, `3dgiordano/agent-plugins`), then install the plugin from
 **Customize → Plugins**. Cursor loads the shared skill directly and registers the
 `sessionStart` hook from `cursor/hooks.json`. Restart Cursor after installing.
+
+### OpenCode
+
+OpenCode installs an npm package, not this marketplace. The repository root
+is that package: `opencode/index.mjs` loads every plugin's `hooks/` scripts
+and puts their `additionalContext` on the session. The skill text is present
+from the first model call. A finding on a close is carried to the next
+prompt, which is the default (non-strict) behaviour on Claude Code.
+
+OpenCode has no hook that can refuse the end of a turn, so a strict gate
+(`TERMMON_STRICT` and the other `*_STRICT` variables, or Cursor's
+`followup_message`) does not start another turn. The finding is still parked
+and said on the next prompt. The one-line notice a Claude Code
+`systemMessage` shows you is not shown.
+
+From a checkout, install the OpenCode SDK once (`npm install` in this
+directory), then point OpenCode at it:
+
+```jsonc
+{
+  "plugins": ["/absolute/path/to/agent-plugins"]
+}
+```
+
+From GitHub, once this `package.json` is on the default branch:
+
+```sh
+opencode plugin add "https://github.com/3dgiordano/agent-plugins"
+```
+
+That is one install for all ten plugins. `node` must be on `PATH`. The hook
+scripts are unchanged.
 
 ### Factory Droid
 
